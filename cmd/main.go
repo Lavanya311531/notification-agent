@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"notification-agent/internal/config"
 	"notification-agent/internal/repository"
 	"notification-agent/internal/service"
@@ -9,49 +11,34 @@ import (
 
 func main() {
 
-	// Load Environment Variables
+	log.Println("Notification Agent Started")
+
 	config.LoadEnv()
 
-	// Connect PostgreSQL
+	log.Println("Connecting to PostgreSQL...")
 	repository.ConnectDB()
 
-	// Start gRPC Server
+	log.Println("Starting gRPC Server...")
 	service.StartGRPCServer()
 
-	// Load Secret
+	log.Println("Loading secrets...")
 	service.GetSecret("SendGridApiKey")
 
-	// Create Notification
+	log.Println("Creating notification...")
 	service.CreateNotification()
 
-	// Send Service Bus Test Message
+	log.Println("Sending test message...")
 	service.SendMessage("Hello Azure Service Bus")
 
-	/*service.GetStatus(
-		"NOTIF-003",
-	)
+	log.Println("Starting Service Bus consumer...")
 
-	)*/
-
-	// fmt.Println(
-	//     "Notification Status:",
-	//     service.GetStatus("NOTIF-003"),
-	// )
-
-	// service.RetryNotification("NOTIF-003")
-
-	// Start Consumer
 	err := servicebus.ReceiveMessage(
-
-		// service.RetryNotification("NOTIF-003")
-
-		// Start Consumer
-
 		config.GetServiceBusConnectionString(),
 		config.GetQueueName(),
 	)
 
 	if err != nil {
+		log.Println("Consumer Error:", err)
 		panic(err)
 	}
 }
