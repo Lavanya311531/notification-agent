@@ -2,7 +2,7 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -11,54 +11,25 @@ import (
 var DB *sql.DB
 
 func ConnectDB() {
-
 	connStr := os.Getenv("POSTGRES_CONNECTION_STRING")
 
-	fmt.Println("Connection String:")
-	fmt.Println(connStr)
+	log.Println("Attempting PostgreSQL connection...")
+	log.Println("Connection String:")
+	log.Println(connStr)
 
-	db, err := sql.Open(
-		"postgres",
-		connStr,
-	)
-
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		fmt.Println("Database Error:", err)
-		return
+		log.Println("Failed to open PostgreSQL connection:", err)
+		panic(err)
 	}
 
 	err = db.Ping()
-
 	if err != nil {
-		fmt.Println("Database Error:", err)
-		return
+		log.Println("Failed to ping PostgreSQL:", err)
+		panic(err)
 	}
 
 	DB = db
 
-	var dbName string
-	var schema string
-
-	err = DB.QueryRow(
-		"SELECT current_database(), current_schema()",
-	).Scan(&dbName, &schema)
-
-	if err != nil {
-		fmt.Println("Debug Error:", err)
-	} else {
-		fmt.Println("Connected Database:", dbName)
-		var serverIP string
-
-		err = DB.QueryRow(
-			"SELECT inet_server_addr()::text",
-		).Scan(&serverIP)
-
-		if err == nil {
-			fmt.Println("Server IP:", serverIP)
-		}
-
-		fmt.Println("Connected Schema:", schema)
-	}
-
-	fmt.Println("PostgreSQL Connected Successfully")
+	log.Println("✅ PostgreSQL connected successfully")
 }
