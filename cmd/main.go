@@ -21,24 +21,23 @@ func main() {
 	log.Println("Starting gRPC Server...")
 	service.StartGRPCServer()
 
-	log.Println("Loading secrets...")
+	log.Println("Loading Key Vault Secret...")
 	service.GetSecret("SendGridApiKey")
 
-	log.Println("Creating notification...")
+	log.Println("Creating Notification...")
 	service.CreateNotification()
 
-	log.Println("Sending test message...")
+	log.Println("Sending Service Bus Message...")
 	service.SendMessage("Hello Azure Service Bus")
 
-	log.Println("Starting Service Bus consumer...")
-
+	log.Println("Starting Service Bus Consumer...")
 	err := servicebus.ReceiveMessage(
 		config.GetServiceBusConnectionString(),
 		config.GetQueueName(),
 	)
 
 	if err != nil {
-		log.Println("Consumer Error:", err)
+		log.Printf("Service Bus Error: %v", err)
 		panic(err)
 	}
 }
