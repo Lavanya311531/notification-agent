@@ -14,8 +14,7 @@ func ConnectDB() {
 	connStr := os.Getenv("POSTGRES_CONNECTION_STRING")
 
 	log.Println("Attempting PostgreSQL connection...")
-	log.Println("Connection String:")
-	log.Println(connStr)
+	log.Println("Using PostgreSQL connection from environment variables")
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
